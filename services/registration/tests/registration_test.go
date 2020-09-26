@@ -171,6 +171,7 @@ func TestPatchUserRegistrationService(t *testing.T) {
 
 	updated_registration := datastore.NewDataStore(config.REGISTRATION_DEFINITION)
 	json.Unmarshal([]byte(partial_user_registration_data), &updated_registration)
+
 	err := service.PatchUserRegistration("testid", updated_registration)
 
 	if err != nil {
@@ -489,8 +490,15 @@ var mentor_registration_data string = `
 `
 var partial_user_registration_data string = `
 {
-	"id": "testid2",
+	"id": "testid",
 	"firstName": "first2",
 	"lastName": "last2",
+	"email": "test@gmail.com",
+	"shirtSize": "M",
+	"github": "githubusername",
+	"linkedin": "linkedinusername",
+	"age": 20,
+	"createdAt": 10,
+	"updatedAt": 15
 }
 `

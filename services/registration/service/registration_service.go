@@ -95,6 +95,7 @@ func UpdateUserRegistration(id string, user_registration models.UserRegistration
 	Patches the registration associated with the given user id
 */
 func PatchUserRegistration(id string, user_registration models.UserRegistration) error {
+	fmt.Println(user_registration)
 	err := user_registration.Validate()
 	fmt.Println(err)
 	if err != nil {

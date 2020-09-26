@@ -282,24 +282,24 @@ func PatchCurrentUserRegistration(w http.ResponseWriter, r *http.Request) {
 
 	user_registration.Data["id"] = id
 
-	// user_info, err := service.GetUserInfo(id)
+	user_info, err := service.GetUserInfo(id)
 
 	if err != nil {
 		errors.WriteError(w, r, errors.InternalError(err.Error(), "Could not get user info."))
 		return
 	}
 
-	// original_registration, err := service.GetUserRegistration(id)
+	original_registration, err := service.GetUserRegistration(id)
 
 	if err != nil {
 		errors.WriteError(w, r, errors.DatabaseError(err.Error(), "Could not get user's original registration."))
 		return
 	}
 
-	// user_registration.Data["github"] = user_info.Username
-	// user_registration.Data["email"] = user_info.Email
+	user_registration.Data["github"] = user_info.Username
+	user_registration.Data["email"] = user_info.Email
 
-	// user_registration.Data["createdAt"] = original_registration.Data["createdAt"]
+	user_registration.Data["createdAt"] = original_registration.Data["createdAt"]
 	user_registration.Data["updatedAt"] = time.Now().Unix()
 
 	err = service.PatchUserRegistration(id, user_registration)
