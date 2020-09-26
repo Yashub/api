@@ -3,14 +3,15 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"reflect"
+	"testing"
+
 	"github.com/HackIllinois/api/common/database"
 	"github.com/HackIllinois/api/common/datastore"
 	"github.com/HackIllinois/api/services/registration/config"
 	"github.com/HackIllinois/api/services/registration/models"
 	"github.com/HackIllinois/api/services/registration/service"
-	"os"
-	"reflect"
-	"testing"
 )
 
 var db database.Database
@@ -139,6 +140,38 @@ func TestUpdateUserRegistrationService(t *testing.T) {
 	updated_registration.Data["firstName"] = "first2"
 	updated_registration.Data["lastName"] = "last2"
 	err := service.UpdateUserRegistration("testid", updated_registration)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	user_registration, err := service.GetUserRegistration("testid")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expected_registration := getBaseUserRegistration()
+	expected_registration.Data["id"] = "testid"
+	expected_registration.Data["firstName"] = "first2"
+	expected_registration.Data["lastName"] = "last2"
+
+	if !reflect.DeepEqual(user_registration.Data["firstName"], expected_registration.Data["firstName"]) {
+		t.Errorf("Wrong user info.\nExpected %v\ngot %v\n", expected_registration.Data["firstName"], user_registration.Data["firstName"])
+	}
+
+	CleanupTestDB(t)
+}
+
+/*
+	Service level test for patching user registration in the db
+*/
+func TestPatchUserRegistrationService(t *testing.T) {
+	SetupTestDB(t)
+
+	updated_registration := datastore.NewDataStore(config.REGISTRATION_DEFINITION)
+	json.Unmarshal([]byte(partial_user_registration_data), &updated_registration)
+	err := service.PatchUserRegistration("testid", updated_registration)
 
 	if err != nil {
 		t.Fatal(err)
@@ -452,5 +485,12 @@ var mentor_registration_data string = `
 	"linkedin": "linkedinusername",
 	"createdAt": 10,
 	"updatedAt": 15
+}
+`
+var partial_user_registration_data string = `
+{
+	"id": "testid2",
+	"firstName": "first2",
+	"lastName": "last2",
 }
 `
